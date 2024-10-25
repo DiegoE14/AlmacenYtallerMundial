@@ -22,22 +22,34 @@ class FacturacionController extends Controller
 
     public function store(Request $request)
     {
-        $inventario = Inventario::findOrFail($request->inventario_id);
+        // Validar que se reciba al menos un producto
+        $request->validate([
+            'productos' => 'required|array',
+            'productos.*.inventario_id' => 'required|exists:inventarios,id',
+            'productos.*.cantidad' => 'required|integer|min:1',
+        ]);
 
-        // Restar cantidad del inventario
-        if ($inventario->cantidad >= $request->cantidad) {
-            $inventario->cantidad -= $request->cantidad;
-            $inventario->save();
+        // Iterar sobre los productos facturados
+        foreach ($request->productos as $producto) {
+            $inventario = Inventario::findOrFail($producto['inventario_id']);
 
-            Facturacion::create([
-                'inventario_id' => $request->inventario_id,
-                'cantidad' => $request->cantidad,
-                'total' => $request->cantidad * $inventario->valor_venta
-            ]);
+            // Verificar si hay suficiente cantidad en inventario
+            if ($inventario->cantidad >= $producto['cantidad']) {
+                // Restar la cantidad del inventario
+                $inventario->cantidad -= $producto['cantidad'];
+                $inventario->save();
 
-            return redirect()->route('facturaciones.index');
+                // Crear la facturación
+                Facturacion::create([
+                    'inventario_id' => $producto['inventario_id'],
+                    'cantidad' => $producto['cantidad'],
+                    'total' => $producto['cantidad'] * $inventario->valor_venta,
+                ]);
+            } else {
+                return back()->withErrors(['error' => "Cantidad insuficiente para el producto: {$inventario->nombre}"]);
+            }
         }
 
-        return back()->withErrors(['error' => 'Cantidad en inventario insuficiente']);
+        return redirect()->route('facturaciones.index')->with('success', 'Factura creada exitosamente.');
     }
 }

@@ -19,4 +19,7 @@ class Facturacion extends Model
     {
         return $this->belongsTo(Inventario::class);
     }
+
+    // Especificar el nombre correcto de la tabla
+    protected $table = 'facturaciones';
 }
