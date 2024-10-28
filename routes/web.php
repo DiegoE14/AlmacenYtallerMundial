@@ -35,5 +35,7 @@ Route::group(['middleware' => ['auth', 'role:user']], function () {
     Route::resource('facturaciones', FacturacionController::class);
 });
 
+Route::get('/facturas/{numeroFactura}/pdf', [FacturacionController::class, 'showPdf'])->name('facturaciones.pdf');
+
 
 require __DIR__ . '/auth.php';
