@@ -54,7 +54,5 @@ EXPOSE 80
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-RUN php artisan migrate --force
-
 
 CMD ["/start.sh"]
