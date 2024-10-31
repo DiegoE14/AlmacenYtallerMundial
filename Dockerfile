@@ -38,7 +38,7 @@ RUN npm install
 RUN npm run build
 
 # Generar key si no existe
-RUN php artisan key:generate --force
+#RUN php artisan key:generate --force
 
 # Configurar permisos
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
