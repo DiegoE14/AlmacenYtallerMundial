@@ -23,6 +23,8 @@ if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     php artisan migrate --force
 fi
 
+php artisan migrate --force
+
 # Crear storage link si no existe
 php artisan storage:link
 
